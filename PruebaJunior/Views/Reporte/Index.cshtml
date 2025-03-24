@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Reportes";
+}
+
+<!-- Título Centrado -->
+<div class="container text-center mt-5">
+    <h2 class="mb-4">Reportes de Incidencias</h2>
+</div>
+
+<!-- Contenedor Principal -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <!-- Columna para Datos y Gráficos -->
+        <div class="col-lg-10 bg-light p-4 rounded shadow">
+            <h4 class="text-center mb-4">Estadísticas de Incidencias</h4>
+
+            <!-- Fila para Tablas -->
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-center">Incidencias por Estado</h5>
+                    <table class="table table-bordered table-striped text-center">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Estado</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.EstadisticasPorEstado as Dictionary<string, int>)
+                            {
+                                <tr>
+                                    <td>@item.Key</td>
+                                    <td>@item.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-6">
+                    <h5 class="text-center">Incidencias por Prioridad</h5>
+                    <table class="table table-bordered table-striped text-center">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Prioridad</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.EstadisticasPorPrioridad as Dictionary<string, int>)
+                            {
+                                <tr>
+                                    <td>@item.Key</td>
+                                    <td>@item.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Fila para Gráficos -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5 class="text-center">Gráfico: Incidencias por Estado</h5>
+                    <canvas id="chartEstados" width="400" height="200"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-center">Gráfico: Incidencias por Prioridad</h5>
+                    <canvas id="chartPrioridades" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js para Gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Datos para el gráfico de estados
+    const estadosLabels = [@Html.Raw(string.Join(", ", (ViewBag.EstadisticasPorEstado as Dictionary<string, int>)?.Keys.Select(k => $"\"{k}\"")))];
+    const estadosData = [@Html.Raw(string.Join(", ", (ViewBag.EstadisticasPorEstado as Dictionary<string, int>)?.Values))];
+
+    const ctxEstados = document.getElementById('chartEstados').getContext('2d');
+    const chartEstados = new Chart(ctxEstados, {
+        type: 'bar',
+        data: {
+            labels: estadosLabels,
+            datasets: [{
+                label: 'Incidencias por Estado',
+                data: estadosData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Datos para el gráfico de prioridades
+    const prioridadesLabels = [@Html.Raw(string.Join(", ", (ViewBag.EstadisticasPorPrioridad as Dictionary<string, int>)?.Keys.Select(k => $"\"{k}\"")))];
+    const prioridadesData = [@Html.Raw(string.Join(", ", (ViewBag.EstadisticasPorPrioridad as Dictionary<string, int>)?.Values))];
+
+    const ctxPrioridades = document.getElementById('chartPrioridades').getContext('2d');
+    const chartPrioridades = new Chart(ctxPrioridades, {
+        type: 'pie',
+        data: {
+            labels: prioridadesLabels,
+            datasets: [{
+                label: 'Incidencias por Prioridad',
+                data: prioridadesData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+</script></script>
